@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
-plt.ioff()
-
 from pathlib import Path
 from enum import Enum
 
@@ -238,12 +236,6 @@ class SM4:
         if topo is None:
             print("No topography data found.")
             return
-            
-        xsize = ldos.RHK_Xsize
-        total = ldos.RHK_Ysize
-        repetitions = total//N
-        x = ldos.LIA_Current_x.data * 1e3
-        ldos_ave = ldos.data.reshape(xsize, N, repetitions).mean(axis=2).T
 
          ## Spec Coordinates
         xoffset = topo.RHK_Xoffset
@@ -256,8 +248,6 @@ class SM4:
         height = np.abs(yscale * ysize)
 
         offset = np.array([xoffset, yoffset]) + 0.5 * np.array([-width, -height])
-
-        ## Plot
         colors = plt.cm.jet(np.linspace(0, 1, N))
         
         fig, ax = plt.subplots(figsize=figsize)
