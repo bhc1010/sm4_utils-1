@@ -111,8 +111,49 @@ class SM4:
 
         return (fig, ax)
 
-    def plot_spectral_cut(self):
-        pass
+    def plot_spectral_cut(self, aspect=None):
+        if self.type is not SM4.FileType.dIdV:
+            print("File contains no STS data.")
+            return 
+        
+        ldos = self.file.LIA_Current
+
+        if 'RHK_SpecDrift_Xcoord' not in ldos.attrs:
+            print('RHK_SpecDrift_Xcoord not in LIA_Current attributes.')
+            return
+        
+        ldos_coords = self.unique_coordinates(zip(ldos.RHK_SpecDrift_Xcoord, ldos.RHK_SpecDrift_Ycoord))
+        N = len(ldos_coords)
+        if N == 0:
+            print("No STS data found.")
+            return
+
+        xsize = ldos.RHK_Xsize
+        total = ldos.RHK_Ysize
+        repetitions = total//N
+        x = ldos.LIA_Current_x.data * 1e3
+        ldos_ave = ldos.data.reshape(xsize, N, repetitions).mean(axis=2).T
+
+        fig, ax = plt.subplots(figsize=(16,7))
+
+        line_cut = (ldos_coords[-1][0] - ldos_coords[0][0], ldos_coords[-1][1] - ldos_coords[0][1])
+        line_length = np.sqrt(line_cut[0]**2 + line_cut[1]**2) * 1e9
+
+        if aspect is None:
+            print(x[-1], x[0], N)
+            aspect = round(x[-1] - x[0]) / (N/2)
+
+        spectral = ax.imshow(ldos_ave, aspect=aspect, extent=[x[0], x[-1], 0, line_length])
+        spectral.set_cmap('turbo')
+
+        cb = fig.colorbar(spectral)
+
+        ax.set_yticks(np.linspace(0, line_length, int(N/4)))
+        ax.set_yticklabels(np.round(np.linspace(line_length, 0, int(N/4)), 2))
+        ax.set_xlabel("Voltage (mV)")
+        ax.set_ylabel("Distance (nm)")
+
+        return (fig, ax, cb)
 
     def plot_waterfall_with_image(self, figsize=(16,8), image_path=None, image_type=None, align=True, plane=True, fix_zero=True, show_axis=False, scalebar_height=None):
         if self.type is not SM4.FileType.dIdV:
