@@ -19,7 +19,7 @@ class SM4:
         self.type = None
 
         if self.raw is None:
-            print("There was a problem loading the file. Please ensure that the full path to the file is correct.")
+            print("There was a problem loading the file. Ensure that the full path to the file is correct.")
             return
 
         if 'Current' in self.raw.data_vars:
@@ -34,7 +34,7 @@ class SM4:
     def scale_data(self, scale: float):
         match self.type:
             case SM4.FileType.Image:
-                print('Cannot scale image data. Please access self.raw to scale data manually.')
+                print('Cannot scale image data. Access self.raw to scale data manually.')
             case SM4.FileType.dIdV:
                 self.raw.LIA_Current.data *= scale
             case SM4.FileType.IZ:
@@ -49,7 +49,7 @@ class SM4:
                     case SM4.Topography.Backward:
                         return np.min(self.raw.Topography_Backward.data)
                     case _:
-                        print("Please indicate which image to use with the image parameter. (e.g. image=SM4.Topography.Forward)")
+                        print("Indicate which image to use with the image parameter. (e.g. image=SM4.Topography.Forward)")
                         return None
             case SM4.FileType.dIdV:
                 return np.min(self.raw.LIA_Current.data)
@@ -65,7 +65,7 @@ class SM4:
                     case SM4.Topography.Backward:
                         return np.max(self.raw.Topography_Backward.data)
                     case _:
-                        print("Please indicate which image to use with the image parameter. (e.g. image=SM4.Topography.Forward)")
+                        print("Indicate which image to use with the image parameter. (e.g. image=SM4.Topography.Forward)")
                         return None
             case SM4.FileType.dIdV:
                 return np.max(self.raw.LIA_Current.data)
